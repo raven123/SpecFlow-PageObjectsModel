@@ -1,0 +1,44 @@
+---------------------- Generate SpecFlowSteps .bat file config----------------------------------------------
+Create a batch file GenerateSpecFlowSteps.bat and add the below content. And then save it.
+echo Starting to generate SpecFlow unit tests
+SpecFlow generateAll %1 /force /verbose
+echo Finished generating SpecFlow unit tests
+Open Tools –> External Tools and Click Add.
+Give title as Generate Steps
+In Command window, browse to the GenerateSteps.bat file and select it.
+In Arguments type $(ProjectFileName)
+In  Initial Directory type $(ProjectDir) and check option Use Output window.Click Apply and Ok
+
+
+
+----------------------------------------------RUn SpecFlow Tests config-----------
+
+Create a batch file and name it as RunSpecflowtests.bat. Add the below content to this batch file and save it
+
+@echo off
+nunit-console %1
+if NOT %errorlevel% == 0 (
+    echo "Error running tests - %errorlevel%"
+    GOTO :exit
+)
+specflow.exe nunitexecutionreport %2 /xmlTestResult:%3
+if NOT %errorlevel% == 0 (
+    echo Error generating report - %errorlevel%
+    GOTO :exit
+)
+if %errorlevel% == 0 TestResult.html
+:exit
+
+Go to Tools –> External tool and click Add
+In Title give it as Run Specflow tests.
+In Command, browse the batch you just created and select it.
+In Arguements box, type “$(TargetName)$(TargetExt) $(ProjectDir)$(ProjectFileName) $(BinDir)TestResult.xml”.
+In Initial Directory type “ $(BinDir)”. And select option Use Output window. Then click apply and Okay.
+Once you have build the project instead of running command lines to execute nUnit-Console and specflow , you can just click Tools->Run Specflow tests and it should execute the tests and generate the Html file also.
+
+
+
+------------------------------------------ generating reports from nunit testresult.xml-------------------
+
+
+specflow.exe nunitexecutionreport UnitTestProject1.csproj /xmlTestResult:.\bin\Debug\TestResult.xml
